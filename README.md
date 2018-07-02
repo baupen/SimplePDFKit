@@ -10,4 +10,4 @@ A performant, PDFium-based iOS PDF rendering library for single pages.
 
 ### Cons
 * No bitcode support, since I couldn't manage to compile PDFium correctly. In fact, I just used the build from [UXReader](https://github.com/vfr/UXReader-iOS). This means you'll have to disable bitcode in any target you need this library for.
-* Contains 282 MB PDFium binary. Yeah, this is a big problem. looks like it's only taking up 240 MB total on my phone though, if that helps ¯\_(ツ)_/¯
+* Contains 282 MB PDFium binary. Yeah, this is a big problem. looks like it's only taking up 240 MB total on my phone though, if that helps ¯\\\_(ツ)\_/¯
