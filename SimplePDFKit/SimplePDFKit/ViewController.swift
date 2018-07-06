@@ -39,17 +39,21 @@ public class SimplePDFViewController: UIViewController {
 	public override func loadView() {
 		let frame = CGRect(origin: .zero, size: .one)
 		
+		view = UIView(frame: frame)
+		view.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+		
 		scrollView = UIScrollView(frame: frame)
-		scrollView.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
-		view = scrollView
+		view.addSubview(scrollView)
+		
+		scrollView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 		
 		contentView = UIView(frame: frame)
 		scrollView.addSubview(contentView)
-		contentView.translatesAutoresizingMaskIntoConstraints = false
 		
-		contentWidth = contentView.widthAnchor.constraint(equalToConstant: frame.width)
+		contentView.translatesAutoresizingMaskIntoConstraints = false
+		contentWidth = contentView.widthAnchor.constraint(equalToConstant: 1000)
 		contentWidth.isActive = true
-		contentHeight = contentView.heightAnchor.constraint(equalToConstant: frame.height)
+		contentHeight = contentView.heightAnchor.constraint(equalToConstant: 1000)
 		contentHeight.isActive = true
 		
 		contentView.topAnchor     .constraint(equalTo: scrollView.topAnchor     ).isActive = true
@@ -59,6 +63,7 @@ public class SimplePDFViewController: UIViewController {
 		
 		fallbackView = UIImageView(frame: frame)
 		contentView.addSubview(fallbackView)
+		
 		fallbackView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 		
 		renderView = UIImageView(frame: frame)
@@ -147,6 +152,7 @@ public class SimplePDFViewController: UIViewController {
 		currentRender = id
 		
 		let newFrame = frameForRenderView()
+		print(newFrame)
 		// bounds of the page in newFrame's coordinate system
 		let pageBounds = CGRect(origin: -newFrame.origin, size: contentView.bounds.size)
 		let renderBounds = pageBounds / newFrame.size
