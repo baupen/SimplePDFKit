@@ -152,7 +152,6 @@ public class SimplePDFViewController: UIViewController {
 		currentRender = id
 		
 		let newFrame = frameForRenderView()
-		print(newFrame)
 		// bounds of the page in newFrame's coordinate system
 		let pageBounds = CGRect(origin: -newFrame.origin, size: contentView.bounds.size)
 		let renderBounds = pageBounds / newFrame.size
