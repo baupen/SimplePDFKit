@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		953C237A20F0132500BE51F7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 953C237920F0132500BE51F7 /* AppDelegate.swift */; };
+		953C237C20F0132500BE51F7 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 953C237B20F0132500BE51F7 /* ViewController.swift */; };
+		953C237F20F0132500BE51F7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 953C237D20F0132500BE51F7 /* Main.storyboard */; };
+		953C238120F0132800BE51F7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 953C238020F0132800BE51F7 /* Assets.xcassets */; };
+		953C238420F0132800BE51F7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 953C238220F0132800BE51F7 /* LaunchScreen.storyboard */; };
+		953C238A20F0134700BE51F7 /* example easy.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 953C238920F0134700BE51F7 /* example easy.pdf */; };
+		953C238B20F0141D00BE51F7 /* SimplePDFKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 954CFBEC20E9AEC20014E02F /* SimplePDFKit.framework */; };
+		953C238C20F0141D00BE51F7 /* SimplePDFKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 954CFBEC20E9AEC20014E02F /* SimplePDFKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		954CFBF120E9AEC20014E02F /* SimplePDFKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 954CFBEF20E9AEC20014E02F /* SimplePDFKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		954CFBFB20E9AFA30014E02F /* fpdfview.h in Headers */ = {isa = PBXBuildFile; fileRef = 954CFBF820E9AFA30014E02F /* fpdfview.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		954CFBFC20E9AFA30014E02F /* libpdfium.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 954CFBF920E9AFA30014E02F /* libpdfium.a */; };
@@ -15,7 +23,39 @@
 		954CFC0320E9B1180014E02F /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 954CFC0120E9B1180014E02F /* Geometry.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		953C238D20F0141D00BE51F7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 954CFBE320E9AEC20014E02F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 954CFBEB20E9AEC20014E02F;
+			remoteInfo = SimplePDFKit;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		953C238F20F0141D00BE51F7 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				953C238C20F0141D00BE51F7 /* SimplePDFKit.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		953C237720F0132500BE51F7 /* SimplePDFExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimplePDFExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		953C237920F0132500BE51F7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		953C237B20F0132500BE51F7 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		953C237E20F0132500BE51F7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		953C238020F0132800BE51F7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		953C238320F0132800BE51F7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		953C238520F0132800BE51F7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		953C238920F0134700BE51F7 /* example easy.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "example easy.pdf"; sourceTree = "<group>"; };
 		954CFBEC20E9AEC20014E02F /* SimplePDFKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SimplePDFKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		954CFBEF20E9AEC20014E02F /* SimplePDFKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SimplePDFKit.h; sourceTree = "<group>"; };
 		954CFBF020E9AEC20014E02F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -27,6 +67,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		953C237420F0132500BE51F7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				953C238B20F0141D00BE51F7 /* SimplePDFKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		954CFBE820E9AEC20014E02F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -38,11 +86,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		953C237820F0132500BE51F7 /* SimplePDFExample */ = {
+			isa = PBXGroup;
+			children = (
+				953C237920F0132500BE51F7 /* AppDelegate.swift */,
+				953C237B20F0132500BE51F7 /* ViewController.swift */,
+				953C238920F0134700BE51F7 /* example easy.pdf */,
+				953C237D20F0132500BE51F7 /* Main.storyboard */,
+				953C238020F0132800BE51F7 /* Assets.xcassets */,
+				953C238220F0132800BE51F7 /* LaunchScreen.storyboard */,
+				953C238520F0132800BE51F7 /* Info.plist */,
+			);
+			path = SimplePDFExample;
+			sourceTree = "<group>";
+		};
 		954CFBE220E9AEC20014E02F = {
 			isa = PBXGroup;
 			children = (
 				954CFBF720E9AFA30014E02F /* PDFium */,
 				954CFBEE20E9AEC20014E02F /* SimplePDFKit */,
+				953C237820F0132500BE51F7 /* SimplePDFExample */,
 				954CFBED20E9AEC20014E02F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -51,6 +114,7 @@
 			isa = PBXGroup;
 			children = (
 				954CFBEC20E9AEC20014E02F /* SimplePDFKit.framework */,
+				953C237720F0132500BE51F7 /* SimplePDFExample.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -91,6 +155,25 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		953C237620F0132500BE51F7 /* SimplePDFExample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 953C238820F0132800BE51F7 /* Build configuration list for PBXNativeTarget "SimplePDFExample" */;
+			buildPhases = (
+				953C237320F0132500BE51F7 /* Sources */,
+				953C237420F0132500BE51F7 /* Frameworks */,
+				953C237520F0132500BE51F7 /* Resources */,
+				953C238F20F0141D00BE51F7 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				953C238E20F0141D00BE51F7 /* PBXTargetDependency */,
+			);
+			name = SimplePDFExample;
+			productName = SimplePDFExample;
+			productReference = 953C237720F0132500BE51F7 /* SimplePDFExample.app */;
+			productType = "com.apple.product-type.application";
+		};
 		954CFBEB20E9AEC20014E02F /* SimplePDFKit */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 954CFBF420E9AEC20014E02F /* Build configuration list for PBXNativeTarget "SimplePDFKit" */;
@@ -115,9 +198,13 @@
 		954CFBE320E9AEC20014E02F /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 1000;
 				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = "Julian Dunskus";
 				TargetAttributes = {
+					953C237620F0132500BE51F7 = {
+						CreatedOnToolsVersion = 10.0;
+					};
 					954CFBEB20E9AEC20014E02F = {
 						CreatedOnToolsVersion = 9.4.1;
 						LastSwiftMigration = 1000;
@@ -130,6 +217,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 954CFBE220E9AEC20014E02F;
 			productRefGroup = 954CFBED20E9AEC20014E02F /* Products */;
@@ -137,11 +225,23 @@
 			projectRoot = "";
 			targets = (
 				954CFBEB20E9AEC20014E02F /* SimplePDFKit */,
+				953C237620F0132500BE51F7 /* SimplePDFExample */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		953C237520F0132500BE51F7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				953C238420F0132800BE51F7 /* LaunchScreen.storyboard in Resources */,
+				953C238120F0132800BE51F7 /* Assets.xcassets in Resources */,
+				953C238A20F0134700BE51F7 /* example easy.pdf in Resources */,
+				953C237F20F0132500BE51F7 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		954CFBEA20E9AEC20014E02F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -152,6 +252,15 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		953C237320F0132500BE51F7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				953C237C20F0132500BE51F7 /* ViewController.swift in Sources */,
+				953C237A20F0132500BE51F7 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		954CFBE720E9AEC20014E02F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -164,7 +273,79 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		953C238E20F0141D00BE51F7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 954CFBEB20E9AEC20014E02F /* SimplePDFKit */;
+			targetProxy = 953C238D20F0141D00BE51F7 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		953C237D20F0132500BE51F7 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				953C237E20F0132500BE51F7 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		953C238220F0132800BE51F7 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				953C238320F0132800BE51F7 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
 /* Begin XCBuildConfiguration section */
+		953C238620F0132800BE51F7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = V2EPDFA9PV;
+				ENABLE_BITCODE = NO;
+				INFOPLIST_FILE = SimplePDFExample/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.juliand665.SimplePDFExample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		953C238720F0132800BE51F7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = V2EPDFA9PV;
+				ENABLE_BITCODE = NO;
+				INFOPLIST_FILE = SimplePDFExample/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.juliand665.SimplePDFExample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		954CFBF220E9AEC20014E02F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -350,6 +531,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		953C238820F0132800BE51F7 /* Build configuration list for PBXNativeTarget "SimplePDFExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				953C238620F0132800BE51F7 /* Debug */,
+				953C238720F0132800BE51F7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		954CFBE620E9AEC20014E02F /* Build configuration list for PBXProject "SimplePDFKit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

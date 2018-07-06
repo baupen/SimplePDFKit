@@ -13,6 +13,8 @@ public class SimplePDFViewController: UIViewController {
 	/// Simply assign a page to this property and the view will be updated accordingly.
 	public var page: PDFPage! {
 		didSet {
+			loadViewIfNeeded()
+			
 			contentWidth.constant = page.size.width
 			contentHeight.constant = page.size.height
 			
@@ -38,6 +40,8 @@ public class SimplePDFViewController: UIViewController {
 		let frame = CGRect(origin: .zero, size: .one)
 		
 		scrollView = UIScrollView(frame: frame)
+		scrollView.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+		view = scrollView
 		
 		contentView = UIView(frame: frame)
 		scrollView.addSubview(contentView)

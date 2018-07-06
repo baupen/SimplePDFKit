@@ -12,9 +12,10 @@ fileprivate func initializePDFiumIfNeeded() {
 }
 
 public class PDFDocument {
-	fileprivate var raw: FPDF_DOCUMENT
+	fileprivate let raw: FPDF_DOCUMENT
 	
-	private var pages: [Int: PDFPage] = [:]
+	private let pageCount: Int
+	private var pages: [WeakReference<PDFPage>?]
 	
 	public convenience init(at url: URL) throws {
 		try self.init(atPath: url.path)
@@ -23,35 +24,52 @@ public class PDFDocument {
 	public init(atPath path: String) throws {
 		initializePDFiumIfNeeded()
 		raw = try convert { FPDF_LoadDocument(path, nil) } // nil: no password
+		pageCount = Int(FPDF_GetPageCount(raw))
+		pages = Array(repeating: nil, count: pageCount)
 	}
 	
 	deinit {
 		FPDF_CloseDocument(raw)
 	}
 	
+	/// gets the `pageNumber`th page of the document; starting at 0 for the first page
 	public func page(_ pageNumber: Int) throws -> PDFPage {
-		if let page = pages[pageNumber] {
+		guard case 0..<pageCount = pageNumber else {
+			throw SimplePDFError.invalidPageNumber
+		}
+		
+		if let page = pages[pageNumber]?.pointee {
 			return page
 		} else {
-			let page = try PDFPage(in: raw, number: pageNumber)
-			pages[pageNumber] = page
+			let page = try PDFPage(in: self, number: pageNumber)
+			pages[pageNumber] = WeakReference(to: page)
 			return page
 		}
 	}
 }
 
-/// make sure to keep the corresponding document alive while you're using this page
+fileprivate class WeakReference<Object: AnyObject> {
+	weak var pointee: Object?
+	
+	init(to pointee: Object) {
+		self.pointee = pointee
+	}
+}
+
 public class PDFPage {
-	fileprivate var raw: FPDF_PAGE
+	fileprivate let raw: FPDF_PAGE
 	
+	public let document: PDFDocument
 	/// the size of the page, in its own coordinate system
-	public var size: CGSize
+	public let size: CGSize
 	
-	fileprivate init(in rawDocument: FPDF_DOCUMENT, number: Int) throws {
-		raw = try convert { FPDF_LoadPage(rawDocument, Int32(number)) }
+	fileprivate init(in document: PDFDocument, number: Int) throws {
+		self.document = document
+		
+		raw = try convert { FPDF_LoadPage(document.raw, Int32(number)) }
 		
 		var (width, height) = (0.0, 0.0)
-		FPDF_GetPageSizeByIndex(rawDocument, Int32(number), &width, &height)
+		FPDF_GetPageSizeByIndex(document.raw, Int32(number), &width, &height)
 		size = CGSize(width: width, height: height)
 	}
 	
@@ -97,6 +115,10 @@ public class PDFBitmap {
 	deinit {
 		FPDFBitmap_Destroy(raw)
 	}
+}
+
+public enum SimplePDFError: Error {
+	case invalidPageNumber
 }
 
 public enum PDFiumError: Int, Error {
