@@ -27,6 +27,7 @@ public class SimplePDFViewController: UIViewController {
 	private var fallbackResolution: CGSize!
 	/// how much extra area to render around the borders (for smoother scrolling), in terms of the render size
 	private let overrenderFraction: CGFloat = 0.1
+	private var shouldResetZoom = true
 	
 	public init() {
 		super.init(nibName: nil, bundle: nil)
@@ -40,6 +41,7 @@ public class SimplePDFViewController: UIViewController {
 		let frame = CGRect(origin: .zero, size: .one)
 		
 		view = UIView(frame: frame)
+		view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 		view.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
 		
 		scrollView = UIScrollView(frame: frame)
@@ -70,16 +72,18 @@ public class SimplePDFViewController: UIViewController {
 		contentView.addSubview(renderView)
 	}
 	
+	public override func didMove(toParentViewController parent: UIViewController?) {
+		if let container = view.superview {
+			view.frame = container.bounds
+			shouldResetZoom = true
+			view.setNeedsLayout()
+		}
+	}
+	
 	public override func viewDidLoad() {
 		super.viewDidLoad()
 		
 		scrollView.delegate = self
-	}
-	
-	public override func viewDidAppear(_ animated: Bool) {
-		super.viewDidAppear(animated)
-		
-		scrollView.zoomScale = scrollView.minimumZoomScale // zoom to fit
 	}
 	
 	public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -101,9 +105,14 @@ public class SimplePDFViewController: UIViewController {
 		// set zoom scale bounds relatively to that
 		scrollView.minimumZoomScale = scaleToFit * 1
 		scrollView.maximumZoomScale = scaleToFit * 100
-		let scale = min(scrollView.maximumZoomScale, max(scrollView.minimumZoomScale, scrollView.zoomScale))
-		scrollView.setZoomScale(scale * 1.000001, animated: false) // dirty hack to make it re-center
-		scrollView.setZoomScale(scale, animated: true)
+		
+		let clampedScale = min(scrollView.maximumZoomScale, max(scrollView.minimumZoomScale, scrollView.zoomScale))
+		let scale = shouldResetZoom ? scaleToFit : clampedScale
+		
+		scrollView.setZoomScale(scale, animated: !shouldResetZoom)
+		centerContentView()
+		
+		shouldResetZoom = false
 	}
 	
 	/// renders a fallback image that's displayed when a part of the page isn't rendered yet; size is proportional to device screen size, which should be appropriate
@@ -136,7 +145,12 @@ public class SimplePDFViewController: UIViewController {
 	}
 	
 	private func centerContentView() {
-		let offset = 0.5 * (scrollView.bounds.size - scrollView.contentSize).map { max(0, $0) }
+		let contentSize = CGSize(
+			width: contentWidth.constant,
+			height: contentHeight.constant
+		)
+		let scaledSize = contentSize * scrollView.zoomScale // dirty but works
+		let offset = 0.5 * (scrollView.bounds.size - scaledSize).map { max(0, $0) }
 		scrollView.contentInset = UIEdgeInsets(top: offset.y, left: offset.x, bottom: 0, right: 0)
 	}
 	
