@@ -73,6 +73,8 @@ public class SimplePDFViewController: UIViewController {
 	}
 	
 	public override func didMove(toParentViewController parent: UIViewController?) {
+		super.didMove(toParentViewController: parent)
+		
 		if let container = view.superview {
 			view.frame = container.bounds
 			shouldResetZoom = true
@@ -87,6 +89,8 @@ public class SimplePDFViewController: UIViewController {
 	}
 	
 	public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+		super.viewWillTransition(to: size, with: coordinator)
+		
 		// maintain zoom-to-fit if currently set
 		if scrollView.zoomScale == scrollView.minimumZoomScale {
 			coordinator.animate(alongsideTransition: { context in
