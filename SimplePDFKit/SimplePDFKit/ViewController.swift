@@ -189,7 +189,7 @@ public class SimplePDFViewController: UIViewController {
 						completion: @escaping (UIImage) -> Void) {
 		let page = self.page!
 		renderQueue.async {
-			guard condition() else { return }
+			guard condition(), page === self.page else { return }
 			
 			// background color
 			bitmap.context.fill(CGRect(origin: .zero, size: .one))
@@ -201,6 +201,7 @@ public class SimplePDFViewController: UIViewController {
 			let image = UIImage(cgImage: bitmap.context.makeImage()!)
 			
 			DispatchQueue.main.async {
+				guard page === self.page else { return }
 				completion(image)
 			}
 		}
