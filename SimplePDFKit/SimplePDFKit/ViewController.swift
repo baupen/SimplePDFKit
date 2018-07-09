@@ -3,12 +3,10 @@
 import UIKit
 
 public class SimplePDFViewController: UIViewController {
-	var scrollView: UIScrollView!
-	var contentView: UIView!
-	var fallbackView: UIImageView!
-	var renderView: UIImageView!
-	var contentWidth: NSLayoutConstraint!
-	var contentHeight: NSLayoutConstraint!
+	/// used for displaying the PDF and scrolling/zooming around
+	public var scrollView: UIScrollView!
+	/// add any views you'd like to have overlaid on the PDF in here
+	public var overlayView: UIView!
 	
 	/// Simply assign a page to this property and the view will be updated accordingly.
 	public var page: PDFPage! {
@@ -21,6 +19,14 @@ public class SimplePDFViewController: UIViewController {
 			prepareFallback()
 		}
 	}
+	
+	public weak var delegate: SimplePDFViewControllerDelegate?
+	
+	private var contentView: UIView!
+	private var fallbackView: UIImageView!
+	private var renderView: UIImageView!
+	private var contentWidth: NSLayoutConstraint!
+	private var contentHeight: NSLayoutConstraint!
 	
 	private let renderQueue = DispatchQueue(label: "rendering", qos: .userInteractive)
 	private var renderBitmap: PDFBitmap!
@@ -70,6 +76,11 @@ public class SimplePDFViewController: UIViewController {
 		
 		renderView = UIImageView(frame: frame)
 		contentView.addSubview(renderView)
+		
+		overlayView = UIView(frame: frame)
+		contentView.addSubview(overlayView)
+		
+		overlayView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 	}
 	
 	public override func didMove(toParentViewController parent: UIViewController?) {
@@ -130,6 +141,7 @@ public class SimplePDFViewController: UIViewController {
 		
 		render(in: fallbackBitmap) { image in
 			self.fallbackView.image = image
+			self.delegate?.pdfFinishedLoading()
 		}
 	}
 	
@@ -220,6 +232,8 @@ extension SimplePDFViewController: UIScrollViewDelegate {
 	public func scrollViewDidZoom(_ scrollView: UIScrollView) {
 		centerContentView()
 		enqueueRender()
+		
+		delegate?.pdfZoomed(to: scrollView.zoomScale)
 	}
 	
 	public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
