@@ -81,14 +81,16 @@ public class PDFPage {
 	public func render(in bitmap: PDFBitmap, bounds: CGRect) {
 		let renderingOptions = FPDF_NO_CATCH
 		
-		FPDF_RenderPageBitmap(bitmap.raw,
-							  raw,
-							  Int32(bounds.origin.x),
-							  Int32(bounds.origin.y),
-							  Int32(bounds.width),
-							  Int32(bounds.height),
-							  0,
-							  renderingOptions)
+		FPDF_RenderPageBitmap(
+			bitmap.raw,
+			raw,
+			Int32(bounds.origin.x),
+			Int32(bounds.origin.y),
+			Int32(bounds.width),
+			Int32(bounds.height),
+			0,
+			renderingOptions
+		)
 	}
 }
 
@@ -104,11 +106,13 @@ public class PDFBitmap {
 		self.context = context
 		
 		try raw = convert {
-			FPDFBitmap_CreateEx(Int32(context.width),
-								Int32(context.height),
-								FPDFBitmap_BGRx,
-								context.data,
-								Int32(context.bytesPerRow))
+			FPDFBitmap_CreateEx(
+				Int32(context.width),
+				Int32(context.height),
+				FPDFBitmap_BGRx,
+				context.data,
+				Int32(context.bytesPerRow)
+			)
 		}
 	}
 	
