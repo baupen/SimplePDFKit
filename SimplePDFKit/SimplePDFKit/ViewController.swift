@@ -2,11 +2,13 @@
 
 import UIKit
 
-public class SimplePDFViewController: UIViewController {
+public final class SimplePDFViewController: UIViewController {
 	/// used for displaying the PDF and scrolling/zooming around
 	public var scrollView: UIScrollView!
 	/// add any views you'd like to have overlaid on the PDF in here
 	public var overlayView: UIView!
+	/// the content view of the scroll view, for your convenience (this is also the scroll view's `viewForZooming`)
+	public var contentView: UIView!
 	
 	/// Simply assign a page to this property and the view will be updated accordingly.
 	public var page: PDFPage! {
@@ -25,7 +27,6 @@ public class SimplePDFViewController: UIViewController {
 	/// use this rather than setting scrollView.contentInset directly
 	public var contentInset = UIEdgeInsets.zero
 	
-	private var contentView: UIView!
 	private var fallbackView: UIImageView!
 	private var renderView: UIImageView!
 	private var contentWidth: NSLayoutConstraint!
@@ -84,6 +85,10 @@ public class SimplePDFViewController: UIViewController {
 		contentView.addSubview(overlayView)
 		
 		overlayView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+		
+		let doubleTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(doubleTapped))
+		doubleTapRecognizer.numberOfTapsRequired = 2
+		view.addGestureRecognizer(doubleTapRecognizer)
 	}
 	
 	public override func didMove(toParentViewController parent: UIViewController?) {
@@ -132,6 +137,18 @@ public class SimplePDFViewController: UIViewController {
 		centerContentView()
 		
 		shouldResetZoom = false
+	}
+	
+	@objc private func doubleTapped(_ tapRecognizer: UITapGestureRecognizer) {
+		guard tapRecognizer.state == .recognized else { return }
+		
+		let position = tapRecognizer.location(in: contentView)
+		if scrollView.zoomScale == scrollView.minimumZoomScale {
+			let size = contentView.bounds.size / 4
+			scrollView.zoom(to: CGRect(origin: position - size / 2, size: size), animated: true)
+		} else {
+			scrollView.setZoomScale(scrollView.minimumZoomScale, animated: true)
+		}
 	}
 	
 	/// renders a fallback image that's displayed when a part of the page isn't rendered yet; size is proportional to device screen size, which should be appropriate
