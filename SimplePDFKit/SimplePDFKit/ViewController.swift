@@ -91,8 +91,8 @@ public final class SimplePDFViewController: UIViewController {
 		view.addGestureRecognizer(doubleTapRecognizer)
 	}
 	
-	public override func didMove(toParentViewController parent: UIViewController?) {
-		super.didMove(toParentViewController: parent)
+	public override func didMove(toParent parent: UIViewController?) {
+		super.didMove(toParent: parent)
 		
 		if let container = view.superview {
 			view.frame = container.bounds
@@ -123,7 +123,7 @@ public final class SimplePDFViewController: UIViewController {
 		
 		renderBitmap = makeBitmap(size: scrollView.frame.size * (1 + 2 * overrenderFraction))
 		
-		let scrollableSize = UIEdgeInsetsInsetRect(scrollView.frame, contentInset).size
+		let scrollableSize = scrollView.frame.inset(by: contentInset).size
 		let scales = scrollableSize / page.size
 		let scaleToFit = min(scales.width, scales.height)
 		// set zoom scale bounds relatively to that
@@ -187,7 +187,7 @@ public final class SimplePDFViewController: UIViewController {
 			height: contentHeight.constant
 		)
 		let scaledSize = contentSize * scrollView.zoomScale // dirty but works
-		let scrollableSize = UIEdgeInsetsInsetRect(scrollView.bounds, contentInset).size
+		let scrollableSize = scrollView.bounds.inset(by: contentInset).size
 		let offset = 0.5 * (scrollableSize - scaledSize).map { max(0, $0) }
 		var inset = contentInset
 		inset.left += offset.x
