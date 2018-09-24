@@ -3,7 +3,7 @@
 import Foundation
 
 // The PDFium binary only works for ARM, so we simulate it to essentially do nothing. This is helpful for testing on simulator and Carthage.
-#if arch(x86_64)
+#if targetEnvironment(simulator)
 
 func FPDF_InitLibrary() {}
 func FPDF_GetLastError() -> UInt {
