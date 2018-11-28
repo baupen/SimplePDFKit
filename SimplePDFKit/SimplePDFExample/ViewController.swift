@@ -10,6 +10,7 @@ class ViewController: UIViewController {
 		
 		// embed segue
 		let pdfController = segue.destination as! SimplePDFViewController
+		pdfController.additionalSafeAreaInsets.bottom = 64
 		pdfController.page = page
 	}
 }
