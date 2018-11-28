@@ -30,7 +30,7 @@ public final class SimplePDFViewController: UIViewController {
 	private var contentHeight: NSLayoutConstraint!
 	
 	private let renderQueue = DispatchQueue(label: "rendering", qos: .userInteractive)
-	private var renderBitmap: PDFBitmap!
+	private var renderBitmap: PDFBitmap?
 	private var fallbackResolution: CGSize!
 	/// how much extra area to render around the borders (for smoother scrolling), in terms of the render size
 	private let overrenderFraction: CGFloat = 0.1
@@ -120,7 +120,7 @@ public final class SimplePDFViewController: UIViewController {
 		
 		renderBitmap = makeBitmap(size: scrollView.frame.size * (1 + 2 * overrenderFraction))
 		
-		let scrollableSize = scrollView.frame.inset(by: originalContentInset ?? scrollView.contentInset).size
+		let scrollableSize = scrollView.bounds.inset(by: scrollView.safeAreaInsets).size
 		let scales = scrollableSize / page.size
 		let scaleToFit = min(scales.width, scales.height)
 		// set zoom scale bounds relatively to that
@@ -178,8 +178,6 @@ public final class SimplePDFViewController: UIViewController {
 		return try! PDFBitmap(referencing: context)
 	}
 	
-	private var originalContentInset: UIEdgeInsets?
-	
 	private func centerContentView() {
 		let contentSize = CGSize(
 			width: contentWidth.constant,
@@ -187,16 +185,15 @@ public final class SimplePDFViewController: UIViewController {
 		)
 		let scaledSize = contentSize * scrollView.zoomScale // dirty but works
 		
-		let inset = originalContentInset ?? scrollView.contentInset
-		originalContentInset = inset
-		
-		let scrollableSize = scrollView.bounds.inset(by: inset).size
+		let scrollableSize = scrollView.bounds.inset(by: scrollView.safeAreaInsets).size
 		let offset = 0.5 * (scrollableSize - scaledSize).map { max(0, $0) }
 		
-		var newInset = inset
-		newInset.left += offset.x
-		newInset.top += offset.y
-		scrollView.contentInset = newInset
+		scrollView.contentInset = UIEdgeInsets(
+			top: offset.y,
+			left: offset.x,
+			bottom: offset.y,
+			right: offset.x
+		)
 	}
 	
 	private func frameForRenderView() -> CGRect {
@@ -207,6 +204,8 @@ public final class SimplePDFViewController: UIViewController {
 	
 	private var currentRender: UUID?
 	private func enqueueRender() {
+		guard let renderBitmap = renderBitmap else { return }
+		
 		let id = UUID()
 		currentRender = id
 		
