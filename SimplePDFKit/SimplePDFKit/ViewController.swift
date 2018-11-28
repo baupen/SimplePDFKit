@@ -24,9 +24,6 @@ public final class SimplePDFViewController: UIViewController {
 	
 	public weak var delegate: SimplePDFViewControllerDelegate?
 	
-	/// use this rather than setting scrollView.contentInset directly
-	public var contentInset = UIEdgeInsets.zero
-	
 	private var fallbackView: UIImageView!
 	private var renderView: UIImageView!
 	private var contentWidth: NSLayoutConstraint!
@@ -123,7 +120,7 @@ public final class SimplePDFViewController: UIViewController {
 		
 		renderBitmap = makeBitmap(size: scrollView.frame.size * (1 + 2 * overrenderFraction))
 		
-		let scrollableSize = scrollView.frame.inset(by: contentInset).size
+		let scrollableSize = scrollView.frame.inset(by: originalContentInset ?? scrollView.contentInset).size
 		let scales = scrollableSize / page.size
 		let scaleToFit = min(scales.width, scales.height)
 		// set zoom scale bounds relatively to that
@@ -181,18 +178,25 @@ public final class SimplePDFViewController: UIViewController {
 		return try! PDFBitmap(referencing: context)
 	}
 	
+	private var originalContentInset: UIEdgeInsets?
+	
 	private func centerContentView() {
 		let contentSize = CGSize(
 			width: contentWidth.constant,
 			height: contentHeight.constant
 		)
 		let scaledSize = contentSize * scrollView.zoomScale // dirty but works
-		let scrollableSize = scrollView.bounds.inset(by: contentInset).size
+		
+		let inset = originalContentInset ?? scrollView.contentInset
+		originalContentInset = inset
+		
+		let scrollableSize = scrollView.bounds.inset(by: inset).size
 		let offset = 0.5 * (scrollableSize - scaledSize).map { max(0, $0) }
-		var inset = contentInset
-		inset.left += offset.x
-		inset.top += offset.y
-		scrollView.contentInset = inset
+		
+		var newInset = inset
+		newInset.left += offset.x
+		newInset.top += offset.y
+		scrollView.contentInset = newInset
 	}
 	
 	private func frameForRenderView() -> CGRect {
