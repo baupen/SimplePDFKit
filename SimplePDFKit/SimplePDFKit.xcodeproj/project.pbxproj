@@ -17,12 +17,11 @@
 		953C238C20F0141D00BE51F7 /* SimplePDFKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 954CFBEC20E9AEC20014E02F /* SimplePDFKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		954CFBF120E9AEC20014E02F /* SimplePDFKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 954CFBEF20E9AEC20014E02F /* SimplePDFKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		954CFBFB20E9AFA30014E02F /* fpdfview.h in Headers */ = {isa = PBXBuildFile; fileRef = 954CFBF820E9AFA30014E02F /* fpdfview.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		954CFBFC20E9AFA30014E02F /* libpdfium.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 954CFBF920E9AFA30014E02F /* libpdfium.a */; };
 		954CFBFD20E9AFA30014E02F /* PDFium.swift in Sources */ = {isa = PBXBuildFile; fileRef = 954CFBFA20E9AFA30014E02F /* PDFium.swift */; };
 		954CFC0220E9B1180014E02F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 954CFC0020E9B1180014E02F /* ViewController.swift */; };
 		954CFC0320E9B1180014E02F /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 954CFC0120E9B1180014E02F /* Geometry.swift */; };
 		9550E0E420F2DCC300921387 /* ViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9550E0E320F2DCC300921387 /* ViewControllerDelegate.swift */; };
-		958430F820F5A62C003AF547 /* FakeLibraryForSimulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958430F720F5A62C003AF547 /* FakeLibraryForSimulator.swift */; };
+		95A58658222DD1A9006B2BE3 /* libpdfium.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 95A58657222DD1A9006B2BE3 /* libpdfium.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,12 +61,11 @@
 		954CFBEF20E9AEC20014E02F /* SimplePDFKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SimplePDFKit.h; sourceTree = "<group>"; };
 		954CFBF020E9AEC20014E02F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		954CFBF820E9AFA30014E02F /* fpdfview.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fpdfview.h; sourceTree = "<group>"; };
-		954CFBF920E9AFA30014E02F /* libpdfium.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libpdfium.a; sourceTree = "<group>"; };
 		954CFBFA20E9AFA30014E02F /* PDFium.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFium.swift; sourceTree = "<group>"; };
 		954CFC0020E9B1180014E02F /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		954CFC0120E9B1180014E02F /* Geometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
 		9550E0E320F2DCC300921387 /* ViewControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerDelegate.swift; sourceTree = "<group>"; };
-		958430F720F5A62C003AF547 /* FakeLibraryForSimulator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeLibraryForSimulator.swift; sourceTree = "<group>"; };
+		95A58657222DD1A9006B2BE3 /* libpdfium.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libpdfium.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,7 +81,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				954CFBFC20E9AFA30014E02F /* libpdfium.a in Frameworks */,
+				95A58658222DD1A9006B2BE3 /* libpdfium.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,9 +137,8 @@
 			isa = PBXGroup;
 			children = (
 				954CFBF820E9AFA30014E02F /* fpdfview.h */,
-				954CFBF920E9AFA30014E02F /* libpdfium.a */,
 				954CFBFA20E9AFA30014E02F /* PDFium.swift */,
-				958430F720F5A62C003AF547 /* FakeLibraryForSimulator.swift */,
+				95A58657222DD1A9006B2BE3 /* libpdfium.a */,
 			);
 			path = PDFium;
 			sourceTree = "<group>";
@@ -272,7 +269,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				954CFC0220E9B1180014E02F /* ViewController.swift in Sources */,
-				958430F820F5A62C003AF547 /* FakeLibraryForSimulator.swift in Sources */,
 				954CFC0320E9B1180014E02F /* Geometry.swift in Sources */,
 				9550E0E420F2DCC300921387 /* ViewControllerDelegate.swift in Sources */,
 				954CFBFD20E9AFA30014E02F /* PDFium.swift in Sources */,

@@ -7,8 +7,6 @@
 // NOTE: External docs refer to this file as "fpdfview.h", so do not rename
 // despite lack of consistency with other public files.
 
-#if __ARM_ARCH
-
 #ifndef PUBLIC_FPDFVIEW_H_
 #define PUBLIC_FPDFVIEW_H_
 
@@ -1039,5 +1037,3 @@ DLLEXPORT FPDF_RESULT STDCALL FPDF_BStr_Clear(FPDF_BSTR* str);
 #endif
 
 #endif  // PUBLIC_FPDFVIEW_H_
-
-#endif
