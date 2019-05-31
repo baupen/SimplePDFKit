@@ -102,6 +102,7 @@ public final class SimplePDFViewController: UIViewController {
 		super.viewDidLoad()
 		
 		scrollView.delegate = self
+		scrollView.contentInsetAdjustmentBehavior = .never
 	}
 	
 	public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -185,14 +186,15 @@ public final class SimplePDFViewController: UIViewController {
 		)
 		let scaledSize = contentSize * scrollView.zoomScale // dirty but works
 		
-		let scrollableSize = scrollView.bounds.inset(by: scrollView.safeAreaInsets).size
+		let safeAreaInsets = scrollView.safeAreaInsets
+		let scrollableSize = scrollView.bounds.inset(by: safeAreaInsets).size
 		let offset = 0.5 * (scrollableSize - scaledSize).map { max(0, $0) }
 		
-		scrollView.contentInset = UIEdgeInsets(
-			top: offset.y,
-			left: offset.x,
-			bottom: offset.y,
-			right: offset.x
+		scrollView.contentInset = UIEdgeInsets( // ugh
+			top: safeAreaInsets.top + offset.y,
+			left: safeAreaInsets.left + offset.x,
+			bottom: safeAreaInsets.bottom + offset.y,
+			right: safeAreaInsets.right + offset.x
 		)
 	}
 	
