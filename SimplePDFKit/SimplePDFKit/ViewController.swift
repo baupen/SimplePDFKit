@@ -229,10 +229,12 @@ public final class SimplePDFViewController: UIViewController {
 	
 	/// - Parameter bounds: the bounds of the page in normalized (0...1) coordinates (ULO); unit rect by default.
 	/// - Parameter condition: a condition to evaluate when getting the opportunity to render asynchronously, to allow invalidating outdated tasks.
-	private func render(in bitmap: PDFBitmap,
-						bounds: CGRect = CGRect(origin: .zero, size: .one),
-						if condition: @autoclosure @escaping () -> Bool = true,
-						completion: @escaping (UIImage) -> Void) {
+	private func render(
+		in bitmap: PDFBitmap,
+		bounds: CGRect = CGRect(origin: .zero, size: .one),
+		if condition: @autoclosure @escaping () -> Bool = true,
+		completion: @escaping (UIImage) -> Void
+	) {
 		let page = self.page!
 		renderQueue.async {
 			guard condition(), page === self.page else { return }
