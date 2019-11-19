@@ -11,7 +11,7 @@ fileprivate func initializePDFiumIfNeeded() {
 	hasInitializedPDFium = true
 }
 
-public class PDFDocument {
+public final class PDFDocument {
 	fileprivate let raw: FPDF_DOCUMENT
 	
 	private let pageCount: Int
@@ -48,7 +48,7 @@ public class PDFDocument {
 	}
 }
 
-fileprivate class WeakReference<Object: AnyObject> {
+fileprivate final class WeakReference<Object: AnyObject> {
 	weak var pointee: Object?
 	
 	init(to pointee: Object) {
@@ -56,7 +56,7 @@ fileprivate class WeakReference<Object: AnyObject> {
 	}
 }
 
-public class PDFPage {
+public final class PDFPage {
 	fileprivate let raw: FPDF_PAGE
 	
 	public let document: PDFDocument
@@ -94,7 +94,7 @@ public class PDFPage {
 	}
 }
 
-public class PDFBitmap {
+public final class PDFBitmap {
 	fileprivate var raw: FPDF_BITMAP
 	public let context: CGContext
 	

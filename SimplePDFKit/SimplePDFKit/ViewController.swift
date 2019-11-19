@@ -65,10 +65,12 @@ public final class SimplePDFViewController: UIViewController {
 		contentHeight = contentView.heightAnchor.constraint(equalToConstant: 1000)
 		contentHeight.isActive = true
 		
-		contentView.topAnchor     .constraint(equalTo: scrollView.topAnchor     ).isActive = true
-		contentView.bottomAnchor  .constraint(equalTo: scrollView.bottomAnchor  ).isActive = true
-		contentView.leadingAnchor .constraint(equalTo: scrollView.leadingAnchor ).isActive = true
-		contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor).isActive = true
+		NSLayoutConstraint.activate([
+			contentView.topAnchor     .constraint(equalTo: scrollView.topAnchor     ),
+			contentView.bottomAnchor  .constraint(equalTo: scrollView.bottomAnchor  ),
+			contentView.leadingAnchor .constraint(equalTo: scrollView.leadingAnchor ),
+			contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+		])
 		
 		fallbackView = UIImageView(frame: frame)
 		contentView.addSubview(fallbackView)
@@ -200,8 +202,10 @@ public final class SimplePDFViewController: UIViewController {
 	
 	private func frameForRenderView() -> CGRect {
 		let frame = contentView.convert(scrollView.frame, from: view)
-		return CGRect(origin: frame.origin - overrenderFraction * frame.size,
-					  size: frame.size * (1 + 2 * overrenderFraction))
+		return CGRect(
+			origin: frame.origin - overrenderFraction * frame.size,
+			size: frame.size * (1 + 2 * overrenderFraction)
+		)
 	}
 	
 	private var currentRender: UUID?
@@ -221,9 +225,9 @@ public final class SimplePDFViewController: UIViewController {
 		let fallbackDensity = fallbackResolution.width / fallbackView.frame.width
 		guard renderDensity > fallbackDensity else { return }
 		
-		render(in: renderBitmap, bounds: renderBounds, if: self.currentRender == id) { image in
-			self.renderView.image = image
-			self.renderView.frame = newFrame
+		render(in: renderBitmap, bounds: renderBounds, if: self.currentRender == id) { [renderView] image in
+			renderView!.image = image
+			renderView!.frame = newFrame
 		}
 	}
 	
