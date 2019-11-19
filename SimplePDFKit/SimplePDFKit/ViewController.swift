@@ -36,6 +36,15 @@ public final class SimplePDFViewController: UIViewController {
 	private let overrenderFraction: CGFloat = 0.1
 	private var shouldResetZoom = true
 	
+	private static var backgroundColor: UIColor {
+		if #available(iOS 13.0, *) {
+			return .systemBackground
+		} else {
+			return .white
+		}
+		
+	}
+	
 	public init() {
 		super.init(nibName: nil, bundle: nil)
 	}
@@ -49,7 +58,7 @@ public final class SimplePDFViewController: UIViewController {
 		
 		view = UIView(frame: frame)
 		view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-		view.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+		view.backgroundColor = Self.backgroundColor
 		
 		scrollView = UIScrollView(frame: frame)
 		view.addSubview(scrollView)
@@ -139,6 +148,18 @@ public final class SimplePDFViewController: UIViewController {
 		shouldResetZoom = false
 	}
 	
+	public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+		super.traitCollectionDidChange(previousTraitCollection)
+		
+		if
+			#available(iOS 12.0, *),
+			traitCollection.userInterfaceStyle != previousTraitCollection?.userInterfaceStyle
+		{
+			enqueueRender()
+			prepareFallback()
+		}
+	}
+	
 	@objc private func doubleTapped(_ tapRecognizer: UITapGestureRecognizer) {
 		guard tapRecognizer.state == .recognized else { return }
 		
@@ -175,9 +196,6 @@ public final class SimplePDFViewController: UIViewController {
 		// normalize to (0, 1)
 		context.scaleBy(x: size.width, y: size.height)
 		
-		// background color
-		context.setFillColor(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1))
-		
 		return try! PDFBitmap(referencing: context)
 	}
 	
@@ -192,12 +210,15 @@ public final class SimplePDFViewController: UIViewController {
 		let scrollableSize = scrollView.bounds.inset(by: safeAreaInsets).size
 		let offset = 0.5 * (scrollableSize - scaledSize).map { max(0, $0) }
 		
-		scrollView.contentInset = UIEdgeInsets( // ugh
+		scrollView.contentInset = .init( // ugh
 			top: safeAreaInsets.top + offset.y,
 			left: safeAreaInsets.left + offset.x,
 			bottom: safeAreaInsets.bottom + offset.y,
 			right: safeAreaInsets.right + offset.x
 		)
+		
+		// it looks like it's comparing the given insets to .zero and behaving differently (not actually zero!) if that's the case, so we have to be very close to but not actually equal to zero
+		scrollView.scrollIndicatorInsets = .init(top: 0, left: 0, bottom: 0, right: 1e-9)
 	}
 	
 	private func frameForRenderView() -> CGRect {
@@ -223,7 +244,10 @@ public final class SimplePDFViewController: UIViewController {
 		// see if render would be higher-res than fallback
 		let renderDensity = renderBitmap.size.width / newFrame.width
 		let fallbackDensity = fallbackResolution.width / fallbackView.frame.width
-		guard renderDensity > fallbackDensity else { return }
+		guard renderDensity > fallbackDensity else {
+			renderView.image = nil
+			return
+		}
 		
 		render(in: renderBitmap, bounds: renderBounds, if: self.currentRender == id) { [renderView] image in
 			renderView!.image = image
@@ -244,6 +268,7 @@ public final class SimplePDFViewController: UIViewController {
 			guard condition(), page === self.page else { return }
 			
 			// background color
+			bitmap.context.setFillColor(Self.backgroundColor.cgColor)
 			bitmap.context.fill(CGRect(origin: .zero, size: .one))
 			
 			let renderBounds = bounds * bitmap.size
