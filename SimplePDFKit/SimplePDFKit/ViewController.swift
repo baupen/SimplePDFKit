@@ -36,13 +36,19 @@ public final class SimplePDFViewController: UIViewController {
 	private let overrenderFraction: CGFloat = 0.1
 	private var shouldResetZoom = true
 	
-	private static var backgroundColor: UIColor {
+	private static var defaultBackgroundColor: UIColor = {
 		if #available(iOS 13.0, *) {
 			return .systemBackground
 		} else {
 			return .white
 		}
-		
+	}()
+	
+	public var backgroundColor = SimplePDFViewController.defaultBackgroundColor {
+		didSet {
+			view.backgroundColor = backgroundColor
+			forceRender()
+		}
 	}
 	
 	public init() {
@@ -58,7 +64,8 @@ public final class SimplePDFViewController: UIViewController {
 		
 		view = UIView(frame: frame)
 		view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-		view.backgroundColor = Self.backgroundColor
+		
+		view.backgroundColor = backgroundColor
 		
 		scrollView = UIScrollView(frame: frame)
 		view.addSubview(scrollView)
@@ -155,9 +162,16 @@ public final class SimplePDFViewController: UIViewController {
 			#available(iOS 12.0, *),
 			traitCollection.userInterfaceStyle != previousTraitCollection?.userInterfaceStyle
 		{
-			enqueueRender()
-			prepareFallback()
+			forceRender()
 		}
+	}
+	
+	/// forces a render of everything visible, including the fallback render in the background
+	public func forceRender() {
+		guard page != nil else { return }
+		
+		enqueueRender()
+		prepareFallback()
 	}
 	
 	@objc private func doubleTapped(_ tapRecognizer: UITapGestureRecognizer) {
@@ -268,7 +282,7 @@ public final class SimplePDFViewController: UIViewController {
 			guard condition(), page === self.page else { return }
 			
 			// background color
-			bitmap.context.setFillColor(Self.backgroundColor.cgColor)
+			bitmap.context.setFillColor(self.backgroundColor.cgColor)
 			bitmap.context.fill(CGRect(origin: .zero, size: .one))
 			
 			let renderBounds = bounds * bitmap.size
