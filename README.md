@@ -12,7 +12,6 @@ The PDFium build used is from [prsolucoes/mobile-pdfium](https://github.com/prso
 * Has simple but powerful APIs for overlaying things onto the PDF, as well as changing the overall visuals.
 
 ### Cons
-* No bitcode support, since that would involve in-depth modification of the PDFium build process. This means you'll have to disable bitcode in any target you need this library for.
-* Contains 42 MB PDFium binary. It's not huge though, so it might just be worth it.
 * While PDFium is very good at rendering curves, it's actually _less_ performant than the built-in `PDFKit` when it comes to rendering font-based text! It's not terrible, but definitely noticeable.
+* Contains 42 MB PDFium binary. This is really not a big problem though, especially considering bitcode + app thinning will trim it down even further for end users—12 MB of that is x64 rather than ARM, for the simulator.
 
