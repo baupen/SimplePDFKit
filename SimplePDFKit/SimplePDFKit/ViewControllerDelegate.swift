@@ -1,5 +1,3 @@
-// Created by Julian Dunskus
-
 import UIKit
 
 public protocol SimplePDFViewControllerDelegate: AnyObject {

@@ -1,5 +1,3 @@
-// Created by Julian Dunskus
-
 import UIKit
 import CGeometry
 
@@ -156,12 +154,12 @@ public final class SimplePDFViewController: UIViewController {
 		shouldResetZoom = false
 	}
 	
-	public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-		super.traitCollectionDidChange(previousTraitCollection)
+	public override func traitCollectionDidChange(_ previous: UITraitCollection?) {
+		super.traitCollectionDidChange(previous)
 		
 		if
 			#available(iOS 12.0, *),
-			traitCollection.userInterfaceStyle != previousTraitCollection?.userInterfaceStyle
+			traitCollection.userInterfaceStyle != previous?.userInterfaceStyle
 		{
 			forceRender()
 		}
@@ -329,6 +327,6 @@ extension SimplePDFViewController: UIScrollViewDelegate {
 	}
 	
 	public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-		return contentView
+		contentView
 	}
 }

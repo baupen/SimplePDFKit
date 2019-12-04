@@ -1,5 +1,3 @@
-// Created by Julian Dunskus
-
 import Foundation
 import CoreGraphics
 
@@ -99,7 +97,7 @@ public final class PDFBitmap {
 	public let context: CGContext
 	
 	public var size: CGSize {
-		return CGSize(width: context.width, height: context.height)
+		CGSize(width: context.width, height: context.height)
 	}
 	
 	public init(referencing context: CGContext) throws {
