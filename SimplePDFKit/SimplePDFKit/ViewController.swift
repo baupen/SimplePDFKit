@@ -1,6 +1,7 @@
 // Created by Julian Dunskus
 
 import UIKit
+import CGeometry
 
 public final class SimplePDFViewController: UIViewController {
 	/// used for displaying the PDF and scrolling/zooming around
@@ -180,7 +181,7 @@ public final class SimplePDFViewController: UIViewController {
 		let position = tapRecognizer.location(in: contentView)
 		if scrollView.zoomScale == scrollView.minimumZoomScale {
 			let size = contentView.bounds.size / 4
-			scrollView.zoom(to: CGRect(origin: position - size / 2, size: size), animated: true)
+			scrollView.zoom(to: CGRect(origin: position - CGVector(size / 2), size: size), animated: true)
 		} else {
 			scrollView.setZoomScale(scrollView.minimumZoomScale, animated: true)
 		}
@@ -192,7 +193,7 @@ public final class SimplePDFViewController: UIViewController {
 		let targetSize = screenBounds.width * screenBounds.height * 3
 		let pageSize = page.size.width * page.size.height
 		let size = sqrt(targetSize / pageSize)
-		let fallbackBitmap = makeBitmap(size: CGSize(width: size * page.size.width, height: size * page.size.height))
+		let fallbackBitmap = makeBitmap(size: size * page.size)
 		fallbackResolution = fallbackBitmap.size
 		
 		render(in: fallbackBitmap) { image in
@@ -225,10 +226,10 @@ public final class SimplePDFViewController: UIViewController {
 		let offset = 0.5 * (scrollableSize - scaledSize).map { max(0, $0) }
 		
 		scrollView.contentInset = .init( // ugh
-			top: safeAreaInsets.top + offset.y,
-			left: safeAreaInsets.left + offset.x,
-			bottom: safeAreaInsets.bottom + offset.y,
-			right: safeAreaInsets.right + offset.x
+			top: safeAreaInsets.top + offset.height,
+			left: safeAreaInsets.left + offset.width,
+			bottom: safeAreaInsets.bottom + offset.height,
+			right: safeAreaInsets.right + offset.width
 		)
 		
 		// it looks like it's comparing the given insets to .zero and behaving differently (not actually zero!) if that's the case, so we have to be very close to but not actually equal to zero
@@ -238,7 +239,7 @@ public final class SimplePDFViewController: UIViewController {
 	private func frameForRenderView() -> CGRect {
 		let frame = contentView.convert(scrollView.frame, from: view)
 		return CGRect(
-			origin: frame.origin - overrenderFraction * frame.size,
+			origin: frame.origin - CGVector(overrenderFraction * frame.size),
 			size: frame.size * (1 + 2 * overrenderFraction)
 		)
 	}
