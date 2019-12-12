@@ -44,7 +44,7 @@ public final class SimplePDFViewController: UIViewController {
 	}()
 	
 	/// The background color for the rendered page. Must be opaque for rendering to look right!
-	public var backgroundColor = SimplePDFViewController.defaultBackgroundColor {
+	public var backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0) {
 		didSet { forceRender() }
 	}
 	
