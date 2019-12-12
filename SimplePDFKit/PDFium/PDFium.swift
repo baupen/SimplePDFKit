@@ -107,7 +107,7 @@ public final class PDFBitmap {
 			FPDFBitmap_CreateEx(
 				Int32(context.width),
 				Int32(context.height),
-				FPDFBitmap_BGRx,
+				FPDFBitmap_BGRA,
 				context.data,
 				Int32(context.bytesPerRow)
 			)

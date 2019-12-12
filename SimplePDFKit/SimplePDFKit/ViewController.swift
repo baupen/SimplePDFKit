@@ -43,11 +43,9 @@ public final class SimplePDFViewController: UIViewController {
 		}
 	}()
 	
+	/// The background color for the rendered page. Must be opaque for rendering to look right!
 	public var backgroundColor = SimplePDFViewController.defaultBackgroundColor {
-		didSet {
-			view.backgroundColor = backgroundColor
-			forceRender()
-		}
+		didSet { forceRender() }
 	}
 	
 	public init() {
@@ -64,7 +62,7 @@ public final class SimplePDFViewController: UIViewController {
 		view = UIView(frame: frame)
 		view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 		
-		view.backgroundColor = backgroundColor
+		view.backgroundColor = Self.defaultBackgroundColor
 		
 		scrollView = UIScrollView(frame: frame)
 		view.addSubview(scrollView)
@@ -202,7 +200,7 @@ public final class SimplePDFViewController: UIViewController {
 	
 	/// makes a bitmap with the specified size in points (i.e. automatically scaled up on retina screens)
 	private func makeBitmap(size: CGSize) -> PDFBitmap {
-		UIGraphicsBeginImageContextWithOptions(size, true, 0) // opaque; screen scale
+		UIGraphicsBeginImageContextWithOptions(size, false, 0) // false = not opaque; 0 = screen scale
 		let context = UIGraphicsGetCurrentContext()!
 		UIGraphicsEndImageContext() // yes, this is safe
 		
@@ -281,8 +279,9 @@ public final class SimplePDFViewController: UIViewController {
 			guard condition(), page === self.page else { return }
 			
 			// background color
+			bitmap.context.clear(.init(origin: -100 * .zero, size: 201 * .one)) // .infinite doesn't work…
 			bitmap.context.setFillColor(self.backgroundColor.cgColor)
-			bitmap.context.fill(CGRect(origin: .zero, size: .one))
+			bitmap.context.fill(bounds)
 			
 			let renderBounds = bounds * bitmap.size
 			
