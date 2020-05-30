@@ -498,6 +498,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/PDFium",
 				);
+				MARKETING_VERSION = 1.3;
 				OTHER_LDFLAGS = "-lc++";
 				PRODUCT_BUNDLE_IDENTIFIER = com.juliand665.SimplePDFKit;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -528,6 +529,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/PDFium",
 				);
+				MARKETING_VERSION = 1.3;
 				OTHER_LDFLAGS = "-lc++";
 				PRODUCT_BUNDLE_IDENTIFIER = com.juliand665.SimplePDFKit;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
