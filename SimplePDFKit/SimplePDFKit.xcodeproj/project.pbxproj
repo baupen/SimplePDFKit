@@ -21,6 +21,7 @@
 		954CFC0220E9B1180014E02F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 954CFC0020E9B1180014E02F /* ViewController.swift */; };
 		9550E0E420F2DCC300921387 /* ViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9550E0E320F2DCC300921387 /* ViewControllerDelegate.swift */; };
 		95A58658222DD1A9006B2BE3 /* libpdfium.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 95A58657222DD1A9006B2BE3 /* libpdfium.a */; };
+		B986D7662481F50B0000C54A /* TaskScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B986D7652481F50B0000C54A /* TaskScheduler.swift */; };
 		B9B562022398780A00E2A0F3 /* CGeometry in Frameworks */ = {isa = PBXBuildFile; productRef = B9B562012398780A00E2A0F3 /* CGeometry */; };
 /* End PBXBuildFile section */
 
@@ -65,6 +66,7 @@
 		954CFC0020E9B1180014E02F /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		9550E0E320F2DCC300921387 /* ViewControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerDelegate.swift; sourceTree = "<group>"; };
 		95A58657222DD1A9006B2BE3 /* libpdfium.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libpdfium.a; sourceTree = "<group>"; };
+		B986D7652481F50B0000C54A /* TaskScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskScheduler.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,6 +126,7 @@
 		954CFBEE20E9AEC20014E02F /* SimplePDFKit */ = {
 			isa = PBXGroup;
 			children = (
+				B986D7652481F50B0000C54A /* TaskScheduler.swift */,
 				954CFC0020E9B1180014E02F /* ViewController.swift */,
 				9550E0E320F2DCC300921387 /* ViewControllerDelegate.swift */,
 				954CFBEF20E9AEC20014E02F /* SimplePDFKit.h */,
@@ -274,6 +277,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B986D7662481F50B0000C54A /* TaskScheduler.swift in Sources */,
 				954CFC0220E9B1180014E02F /* ViewController.swift in Sources */,
 				9550E0E420F2DCC300921387 /* ViewControllerDelegate.swift in Sources */,
 				954CFBFD20E9AFA30014E02F /* PDFium.swift in Sources */,

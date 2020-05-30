@@ -28,7 +28,19 @@ public final class SimplePDFViewController: UIViewController {
 	private var contentWidth: NSLayoutConstraint!
 	private var contentHeight: NSLayoutConstraint!
 	
-	private let renderQueue = DispatchQueue(label: "rendering", qos: .userInteractive)
+	/**
+	The minimum time to wait between render tasks, so as not to use 100% of the cpu (granted, renders happen off-thread, but it's just not very energy-efficient).
+	The default is 1/5, i.e. a maximum of 5 renders per second—this may seem low, but thanks to the fallback render in the background and the fact that renders also include some buffer of things that are just off-screen, it's really enough for most cases.
+	*/
+	public var minRenderDelay: TimeInterval {
+		get { renderScheduler.minDelay }
+		set { renderScheduler.minDelay = newValue }
+	}
+	private let renderScheduler = TaskScheduler(
+		on: DispatchQueue(label: "pdf rendering", qos: .userInitiated),
+		minDelay: 1/5 // 5 fps target—it's honestly more than good enough
+	)
+	
 	private var renderBitmap: PDFBitmap?
 	private var fallbackResolution: CGSize!
 	/// how much extra area to render around the borders (for smoother scrolling), in terms of the render size
@@ -240,12 +252,8 @@ public final class SimplePDFViewController: UIViewController {
 		)
 	}
 	
-	private var currentRender: UUID?
 	private func enqueueRender() {
 		guard let renderBitmap = renderBitmap else { return }
-		
-		let id = UUID()
-		currentRender = id
 		
 		let newFrame = frameForRenderView()
 		// bounds of the page in newFrame's coordinate system
@@ -260,7 +268,7 @@ public final class SimplePDFViewController: UIViewController {
 			return
 		}
 		
-		render(in: renderBitmap, bounds: renderBounds, if: self.currentRender == id) { [renderView] image in
+		render(in: renderBitmap, bounds: renderBounds) { [renderView] image in
 			renderView!.image = image
 			renderView!.frame = newFrame
 		}
@@ -271,12 +279,11 @@ public final class SimplePDFViewController: UIViewController {
 	private func render(
 		in bitmap: PDFBitmap,
 		bounds: CGRect = CGRect(origin: .zero, size: .one),
-		if condition: @autoclosure @escaping () -> Bool = true,
 		completion: @escaping (UIImage) -> Void
 	) {
 		let page = self.page!
-		renderQueue.async {
-			guard condition(), page === self.page else { return }
+		renderScheduler.enqueue {
+			guard page === self.page else { return }
 			
 			// background color
 			bitmap.context.clear(.init(origin: -100 * .zero, size: 201 * .one)) // .infinite doesn't work…
