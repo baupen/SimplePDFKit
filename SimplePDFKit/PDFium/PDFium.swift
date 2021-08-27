@@ -9,11 +9,11 @@ fileprivate func initializePDFiumIfNeeded() {
 	hasInitializedPDFium = true
 }
 
-public final class PDFDocument {
+public final class PDFiumDocument: SimplePDFDocument {
 	fileprivate let raw: FPDF_DOCUMENT
 	
 	private let pageCount: Int
-	private var pages: [WeakReference<PDFPage>?]
+	private var pages: [WeakReference<PDFiumPage>?]
 	
 	public convenience init(at url: URL) throws {
 		try self.init(atPath: url.path)
@@ -31,7 +31,7 @@ public final class PDFDocument {
 	}
 	
 	/// gets the `pageNumber`th page of the document; starting at 0 for the first page
-	public func page(_ pageNumber: Int) throws -> PDFPage {
+	public func page(_ pageNumber: Int) throws -> PDFiumPage {
 		guard case 0..<pageCount = pageNumber else {
 			throw SimplePDFError.invalidPageNumber
 		}
@@ -39,7 +39,7 @@ public final class PDFDocument {
 		if let page = pages[pageNumber]?.pointee {
 			return page
 		} else {
-			let page = try PDFPage(in: self, number: pageNumber)
+			let page = try PDFiumPage(in: self, number: pageNumber)
 			pages[pageNumber] = WeakReference(to: page)
 			return page
 		}
@@ -54,14 +54,14 @@ fileprivate final class WeakReference<Object: AnyObject> {
 	}
 }
 
-public final class PDFPage {
+public final class PDFiumPage: SimplePDFPage {
 	fileprivate let raw: FPDF_PAGE
 	
-	public let document: PDFDocument
+	public let document: PDFiumDocument
 	/// the size of the page, in its own coordinate system
 	public let size: CGSize
 	
-	fileprivate init(in document: PDFDocument, number: Int) throws {
+	fileprivate init(in document: PDFiumDocument, number: Int) throws {
 		self.document = document
 		
 		raw = try convert { FPDF_LoadPage(document.raw, Int32(number)) }
@@ -76,7 +76,7 @@ public final class PDFPage {
 	}
 	
 	/// - Parameter bounds: the bounds of the finished render within the bitmap, in bitmap coords.
-	public func render(in bitmap: PDFBitmap, bounds: CGRect) {
+	public func render(in bitmap: PDFiumBitmap, bounds: CGRect) {
 		let renderingOptions = FPDF_NO_CATCH
 		
 		FPDF_RenderPageBitmap(
@@ -92,13 +92,9 @@ public final class PDFPage {
 	}
 }
 
-public final class PDFBitmap {
+public final class PDFiumBitmap: SimplePDFRenderDestination {
 	fileprivate var raw: FPDF_BITMAP
 	public let context: CGContext
-	
-	public var size: CGSize {
-		CGSize(width: context.width, height: context.height)
-	}
 	
 	public init(referencing context: CGContext) throws {
 		self.context = context

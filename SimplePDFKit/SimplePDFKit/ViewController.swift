@@ -1,5 +1,6 @@
 import UIKit
 import CGeometry
+import HandyOperators
 
 public final class SimplePDFViewController: UIViewController {
 	/// used for displaying the PDF and scrolling/zooming around
@@ -8,18 +9,6 @@ public final class SimplePDFViewController: UIViewController {
 	public var overlayView: UIView!
 	/// the content view of the scroll view, for your convenience (this is also the scroll view's `viewForZooming`)
 	public var contentView: UIView!
-	
-	/// Simply assign a page to this property and the view will be updated accordingly.
-	public var page: PDFPage! {
-		didSet {
-			loadViewIfNeeded()
-			
-			contentWidth.constant = page.size.width
-			contentHeight.constant = page.size.height
-			
-			prepareFallback()
-		}
-	}
 	
 	public weak var delegate: SimplePDFViewControllerDelegate?
 	
@@ -41,19 +30,20 @@ public final class SimplePDFViewController: UIViewController {
 		minDelay: 1/5 // 5 fps target—it's honestly more than good enough
 	)
 	
-	private var renderBitmap: PDFBitmap?
+	private var renderer: SimplePDFRenderer!
+	private var renderCanvas: PreparedCanvas?
 	private var fallbackResolution: CGSize!
 	/// how much extra area to render around the borders (for smoother scrolling), in terms of the render size
 	private let overrenderFraction: CGFloat = 0.1
 	private var shouldResetZoom = true
 	
-	private static var defaultBackgroundColor: UIColor = {
+	private static var defaultBackgroundColor: UIColor {
 		if #available(iOS 13.0, *) {
 			return .systemBackground
 		} else {
 			return .white
 		}
-	}()
+	}
 	
 	/// The background color for the rendered page. Must be opaque for rendering to look right!
 	public var backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0) {
@@ -66,6 +56,19 @@ public final class SimplePDFViewController: UIViewController {
 	
 	public required init?(coder: NSCoder) {
 		super.init(coder: coder)
+	}
+	
+	public func display<Page: SimplePDFPage>(_ page: Page) {
+		renderer = RendererProvider(page) <- {
+			$0.backgroundColor = backgroundColor.cgColor
+		}
+		
+		loadViewIfNeeded()
+		
+		contentWidth.constant = page.size.width
+		contentHeight.constant = page.size.height
+		
+		prepareFallback()
 	}
 	
 	public override func loadView() {
@@ -146,10 +149,12 @@ public final class SimplePDFViewController: UIViewController {
 	public override func viewDidLayoutSubviews() {
 		super.viewDidLayoutSubviews()
 		
-		renderBitmap = makeBitmap(size: scrollView.frame.size * (1 + 2 * overrenderFraction))
+		renderCanvas = renderer.prepareCanvas(
+			size: scrollView.frame.size * (1 + 2 * overrenderFraction)
+		)
 		
 		let scrollableSize = scrollView.bounds.inset(by: scrollView.safeAreaInsets).size
-		let scales = scrollableSize / page.size
+		let scales = scrollableSize / renderer.pageSize
 		let scaleToFit = min(scales.width, scales.height)
 		// set zoom scale bounds relatively to that
 		scrollView.minimumZoomScale = scaleToFit * 1
@@ -169,7 +174,8 @@ public final class SimplePDFViewController: UIViewController {
 		
 		if
 			#available(iOS 12.0, *),
-			traitCollection.userInterfaceStyle != previous?.userInterfaceStyle
+			let previous = previous,
+			traitCollection.userInterfaceStyle != previous.userInterfaceStyle
 		{
 			forceRender()
 		}
@@ -177,7 +183,7 @@ public final class SimplePDFViewController: UIViewController {
 	
 	/// forces a render of everything visible, including the fallback render in the background
 	public func forceRender() {
-		guard page != nil else { return }
+		guard renderer != nil else { return }
 		
 		enqueueRender()
 		prepareFallback()
@@ -199,27 +205,17 @@ public final class SimplePDFViewController: UIViewController {
 	private func prepareFallback() {
 		let screenBounds = UIScreen.main.bounds
 		let targetSize = screenBounds.width * screenBounds.height * 3
-		let pageSize = page.size.width * page.size.height
-		let size = sqrt(targetSize / pageSize)
-		let fallbackBitmap = makeBitmap(size: size * page.size)
-		fallbackResolution = fallbackBitmap.size
+		let pageSize = renderer.pageSize.width * renderer.pageSize.height
+		let scale = sqrt(targetSize / pageSize)
 		
-		render(in: fallbackBitmap) { image in
+		let canvas = renderer.prepareCanvas(scale: scale)
+		fallbackResolution = canvas.renderSize
+		
+		render(on: canvas) { [weak self] image in
+			guard let self = self else { return }
 			self.fallbackView.image = image
 			self.delegate?.pdfFinishedLoading()
 		}
-	}
-	
-	/// makes a bitmap with the specified size in points (i.e. automatically scaled up on retina screens)
-	private func makeBitmap(size: CGSize) -> PDFBitmap {
-		UIGraphicsBeginImageContextWithOptions(size, false, 0) // false = not opaque; 0 = screen scale
-		let context = UIGraphicsGetCurrentContext()!
-		UIGraphicsEndImageContext() // yes, this is safe
-		
-		// normalize to (0, 1)
-		context.scaleBy(x: size.width, y: size.height)
-		
-		return try! PDFBitmap(referencing: context)
 	}
 	
 	private func centerContentView() {
@@ -253,7 +249,7 @@ public final class SimplePDFViewController: UIViewController {
 	}
 	
 	private func enqueueRender() {
-		guard let renderBitmap = renderBitmap else { return }
+		guard let canvas = renderCanvas else { return }
 		
 		let newFrame = frameForRenderView()
 		// bounds of the page in newFrame's coordinate system
@@ -261,43 +257,35 @@ public final class SimplePDFViewController: UIViewController {
 		let renderBounds = pageBounds / newFrame.size
 		
 		// see if render would be higher-res than fallback
-		let renderDensity = renderBitmap.size.width / newFrame.width
+		let renderDensity = canvas.renderSize.width / newFrame.width
 		let fallbackDensity = fallbackResolution.width / fallbackView.frame.width
 		guard renderDensity > fallbackDensity else {
 			renderView.image = nil
 			return
 		}
 		
-		render(in: renderBitmap, bounds: renderBounds) { [renderView] image in
+		render(bounds: renderBounds, on: canvas) { [renderView] image in
 			renderView!.image = image
 			renderView!.frame = newFrame
 		}
 	}
 	
-	/// - Parameter bounds: the bounds of the page in normalized (0...1) coordinates (ULO); unit rect by default.
+	/// - Parameter bounds: the bounds of the page in normalized (0...1) coordinates (ULO); everything (unit rect) by default.
 	/// - Parameter condition: a condition to evaluate when getting the opportunity to render asynchronously, to allow invalidating outdated tasks.
 	private func render(
-		in bitmap: PDFBitmap,
 		bounds: CGRect = CGRect(origin: .zero, size: .one),
+		on canvas: PreparedCanvas,
 		completion: @escaping (UIImage) -> Void
 	) {
-		let page = self.page!
-		renderScheduler.enqueue {
-			guard page === self.page else { return }
+		let renderer = self.renderer
+		renderScheduler.enqueue { [weak self] in
+			guard renderer === self?.renderer else { return }
 			
-			// background color
-			bitmap.context.clear(.init(origin: -100 * .zero, size: 201 * .one)) // .infinite doesn't work…
-			bitmap.context.setFillColor(self.backgroundColor.cgColor)
-			bitmap.context.fill(bounds)
+			let rawImage = canvas.render(bounds: bounds)
+			let image = UIImage(cgImage: rawImage)
 			
-			let renderBounds = bounds * bitmap.size
-			
-			page.render(in: bitmap, bounds: renderBounds)
-			
-			let image = UIImage(cgImage: bitmap.context.makeImage()!)
-			
-			DispatchQueue.main.async {
-				guard page === self.page else { return }
+			DispatchQueue.main.async { [weak self] in
+				guard renderer === self?.renderer else { return }
 				completion(image)
 			}
 		}
