@@ -588,7 +588,7 @@
 /* Begin XCRemoteSwiftPackageReference section */
 		B91D37F526D73FBE00238042 /* XCRemoteSwiftPackageReference "HandyOperators" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "git@github.com:juliand665/HandyOperators.git";
+			repositoryURL = "https://github.com/juliand665/HandyOperators.git";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 2.0.1;
