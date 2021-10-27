@@ -37,14 +37,6 @@ public final class SimplePDFViewController: UIViewController {
 	private let overrenderFraction: CGFloat = 0.1
 	private var shouldResetZoom = true
 	
-	private static var defaultBackgroundColor: UIColor {
-		if #available(iOS 13.0, *) {
-			return .systemBackground
-		} else {
-			return .white
-		}
-	}
-	
 	/// The background color for the rendered page. Must be opaque for rendering to look right!
 	public var backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0) {
 		didSet { forceRender() }
@@ -77,7 +69,7 @@ public final class SimplePDFViewController: UIViewController {
 		view = UIView(frame: frame)
 		view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 		
-		view.backgroundColor = Self.defaultBackgroundColor
+		view.backgroundColor = .systemBackground
 		
 		scrollView = UIScrollView(frame: frame)
 		view.addSubview(scrollView)
