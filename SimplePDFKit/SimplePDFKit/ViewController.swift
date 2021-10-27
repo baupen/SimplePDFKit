@@ -19,7 +19,7 @@ public final class SimplePDFViewController: UIViewController {
 	
 	/**
 	The minimum time to wait between render tasks, so as not to use 100% of the cpu (granted, renders happen off-thread, but it's just not very energy-efficient).
-	The default is 1/5, i.e. a maximum of 5 renders per second—this may seem low, but thanks to the fallback render in the background and the fact that renders also include some buffer of things that are just off-screen, it's really enough for most cases.
+	The default is 1/10, i.e. a maximum of 10 renders per second—this may seem low, but thanks to the fallback render in the background and the fact that renders also include some buffer of things that are just off-screen, it's really enough for most cases.
 	*/
 	public var minRenderDelay: TimeInterval {
 		get { renderScheduler.minDelay }
@@ -27,7 +27,7 @@ public final class SimplePDFViewController: UIViewController {
 	}
 	private let renderScheduler = TaskScheduler(
 		on: DispatchQueue(label: "pdf rendering", qos: .userInitiated),
-		minDelay: 1/5 // 5 fps target—it's honestly more than good enough
+		minDelay: 1/10 // 10 fps target—it's honestly good enough
 	)
 	
 	private var renderer: SimplePDFRenderer!

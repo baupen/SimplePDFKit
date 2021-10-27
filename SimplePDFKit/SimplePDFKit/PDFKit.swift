@@ -51,7 +51,7 @@ extension PDFPage: SimplePDFPage {
 		context.translateBy(x: 0, y: pageBounds.height)
 		context.scaleBy(x: 1, y: -1)
 		
-		self.draw(with: displayBox, to: context)
+		draw(with: displayBox, to: context)
 	}
 }
 
