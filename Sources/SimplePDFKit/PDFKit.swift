@@ -34,7 +34,11 @@ extension PDFPage: SimplePDFPage {
 	public typealias RenderDestination = PDFKitRenderDestination
 	
 	public var size: CGSize {
-		bounds(for: displayBox).size
+		bounds.size
+	}
+	
+	var bounds: CGRect {
+		self.bounds(for: displayBox).applying(transform(for: displayBox))
 	}
 	
 	public func render(in bitmap: PDFKitRenderDestination, bounds: CGRect) {
@@ -43,7 +47,7 @@ extension PDFPage: SimplePDFPage {
 		defer { context.restoreGState() }
 		
 		context.scale(by: .one / context.size)
-		let pageBounds = self.bounds(for: displayBox)
+		let pageBounds = self.bounds
 		context.translate(by: CGVector(bounds.origin))
 		context.scale(by: bounds.size / pageBounds.size)
 		
