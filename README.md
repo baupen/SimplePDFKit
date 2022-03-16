@@ -4,7 +4,7 @@ Consider your prayers answered:
 # SimplePDFKit
 A performant, PDFium-based iOS PDF rendering library for single pages.
 
-The PDFium build used is from [paulo-coutinho/pdfium-lib](https://github.com/paulo-coutinho/pdfium-lib), who managed what I never could: to get PDFium to build for iOS (thanks so much!).
+The PDFium build used is from [paulocoutinhox/pdfium-lib](https://github.com/paulocoutinhox/pdfium-lib), who managed what I never could: to get PDFium to build for iOS (thanks so much!).
 
 ### Pros
 * It's fast. Like _really_ fast. Many PDFs that are barely viewable with the built-in `PDFKit` are no problem at all for this library.
