@@ -1,38 +1,25 @@
 import Foundation
 
-final class TaskScheduler {
-	var minDelay: TimeInterval
-	
-	private let queue: DispatchQueue
-	private var mostRecentTask: Task?
+final actor TaskScheduler {
 	private var nextTaskTime = DispatchTime(uptimeNanoseconds: 0)
+	private var cancel: (() -> Void)?
 	
-	init(on queue: DispatchQueue, minDelay: TimeInterval) {
-		self.queue = queue
-		self.minDelay = minDelay
-	}
-	
-	func enqueue(_ taskBlock: @escaping () -> Void) {
-		let task = Task()
-		mostRecentTask = task
-		queue.async { [queue] in
-			guard self.mostRecentTask == task else { return }
-			
-			let now = DispatchTime.now()
-			guard self.nextTaskTime < now else {
-				queue.asyncAfter(deadline: self.nextTaskTime, execute: {
-					guard self.mostRecentTask == task else { return }
-					taskBlock()
-				})
-				return
+	func enqueue<T>(minDelay: TimeInterval, _ taskBlock: @escaping () -> T) async throws -> T {
+		let now = DispatchTime.now()
+		cancel?()
+		let task = Task {
+			do {
+				if nextTaskTime > now {
+					try await Task.sleep(nanoseconds: nextTaskTime.uptimeNanoseconds - now.uptimeNanoseconds)
+				}
+				try Task.checkCancellation()
+			} catch {
+				throw error
 			}
-			self.nextTaskTime = now + self.minDelay
-			
-			taskBlock()
+			nextTaskTime = .now() + minDelay
+			return taskBlock()
 		}
-	}
-	
-	private struct Task: Equatable {
-		let id = UUID()
+		cancel = task.cancel
+		return try await task.value
 	}
 }

@@ -21,14 +21,8 @@ public final class SimplePDFViewController: UIViewController {
 	The minimum time to wait between render tasks, so as not to use 100% of the cpu (granted, renders happen off-thread, but it's just not very energy-efficient).
 	The default is 1/10, i.e. a maximum of 10 renders per second—this may seem low, but thanks to the fallback render in the background and the fact that renders also include some buffer of things that are just off-screen, it's really enough for most cases.
 	*/
-	public var minRenderDelay: TimeInterval {
-		get { renderScheduler.minDelay }
-		set { renderScheduler.minDelay = newValue }
-	}
-	private let renderScheduler = TaskScheduler(
-		on: DispatchQueue(label: "pdf rendering", qos: .userInitiated),
-		minDelay: 1/10 // 10 fps target—it's honestly good enough
-	)
+	public var minRenderDelay: TimeInterval = 1/10 // 10 fps target—it's honestly good enough
+	private let renderScheduler = TaskScheduler()
 	
 	private var renderer: SimplePDFRenderer!
 	private var renderCanvas: PreparedCanvas?
@@ -36,6 +30,8 @@ public final class SimplePDFViewController: UIViewController {
 	/// how much extra area to render around the borders (for smoother scrolling), in terms of the render size
 	private let overrenderFraction: CGFloat = 0.1
 	private var shouldResetZoom = true
+	
+	private var cancelFunctions: [() -> Void] = []
 	
 	/// The background color for the rendered page. Must be opaque for rendering to look right!
 	public var backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0) {
@@ -51,6 +47,7 @@ public final class SimplePDFViewController: UIViewController {
 	}
 	
 	public func display<Page: SimplePDFPage>(_ page: Page) {
+		cancelTasks()
 		renderer = RendererProvider(page) <- {
 			$0.backgroundColor = backgroundColor.cgColor
 		}
@@ -161,6 +158,18 @@ public final class SimplePDFViewController: UIViewController {
 		shouldResetZoom = false
 	}
 	
+	public override func viewDidAppear(_ animated: Bool) {
+		super.viewDidAppear(animated)
+		if fallbackState == .missing {
+			prepareFallback()
+		}
+	}
+	
+	public override func viewDidDisappear(_ animated: Bool) {
+		super.viewDidDisappear(animated)
+		cancelTasks()
+	}
+	
 	public override func traitCollectionDidChange(_ previous: UITraitCollection?) {
 		super.traitCollectionDidChange(previous)
 		
@@ -177,6 +186,7 @@ public final class SimplePDFViewController: UIViewController {
 	public func forceRender() {
 		guard renderer != nil else { return }
 		
+		cancelTasks()
 		enqueueRender()
 		prepareFallback()
 	}
@@ -193,21 +203,64 @@ public final class SimplePDFViewController: UIViewController {
 		}
 	}
 	
+	private func startTask(_ task: Task<Void, Never>) {
+		cancelFunctions.append(task.cancel)
+	}
+	
+	private func cancelTasks() {
+		for cancel in cancelFunctions {
+			cancel()
+		}
+		cancelFunctions = []
+		
+		if fallbackState == .rendering {
+			fallbackState = .missing
+		}
+	}
+	
+	private var fallbackState = FallbackState.missing
 	/// renders a fallback image that's displayed when a part of the page isn't rendered yet; size is proportional to device screen size, which should be appropriate
 	private func prepareFallback() {
 		let screenBounds = UIScreen.main.bounds
-		let targetSize = screenBounds.width * screenBounds.height * 3
+		let targetSize = screenBounds.width * screenBounds.height * 2 // honestly this is plenty
 		let pageSize = renderer.pageSize.width * renderer.pageSize.height
 		let scale = sqrt(targetSize / pageSize)
 		
-		let canvas = renderer.prepareCanvas(scale: scale)
-		fallbackResolution = canvas.renderSize
+		fallbackState = .rendering
+		fallbackView.image = nil
 		
-		render(on: canvas) { [weak self] image in
-			guard let self = self else { return }
-			self.fallbackView.image = image
-			self.delegate?.pdfFinishedLoading()
+		let fallbackScales: [CGFloat] = [0.3, 0.6, 1.0]
+		let canvases = fallbackScales.map { renderer!.prepareCanvas(scale: scale * $0) }
+		// start with a lower-res fallback
+		fallbackResolution = canvases.last!.renderSize
+		startTask(.detached(priority: .userInitiated) { [weak self] in
+			for canvas in canvases {
+				guard let self, !Task.isCancelled else { return }
+				let render = UIImage(cgImage: canvas.render(bounds: .unit))
+				await self.setFallback(render) // notifies delegate when first fallback complete
+			}
+			await self?.finishFallbacks()
+		})
+	}
+	
+	private func setFallback(_ fallback: UIImage) {
+		guard !Task.isCancelled else { return }
+		let imageWasNil = fallbackView.image == nil
+		fallbackView.image = fallback
+		if imageWasNil {
+			delegate?.pdfFinishedLoading()
 		}
+	}
+	
+	private func finishFallbacks() {
+		guard !Task.isCancelled else { return }
+		fallbackState = .complete
+	}
+	
+	private enum FallbackState: Equatable {
+		case missing
+		case rendering
+		case complete
 	}
 	
 	private func centerContentView() {
@@ -256,32 +309,33 @@ public final class SimplePDFViewController: UIViewController {
 			return
 		}
 		
-		render(bounds: renderBounds, on: canvas) { [renderView] image in
+		startTask(.init {
+			guard let image = try? await render(bounds: renderBounds, on: canvas) else { return }
+			
 			renderView!.image = image
 			renderView!.frame = newFrame
-		}
+		})
 	}
 	
 	/// - Parameter bounds: the bounds of the page in normalized (0...1) coordinates (ULO); everything (unit rect) by default.
 	/// - Parameter condition: a condition to evaluate when getting the opportunity to render asynchronously, to allow invalidating outdated tasks.
+	@MainActor
 	private func render(
-		bounds: CGRect = CGRect(origin: .zero, size: .one),
-		on canvas: PreparedCanvas,
-		completion: @escaping (UIImage) -> Void
-	) {
-		let renderer = self.renderer
-		renderScheduler.enqueue { [weak self] in
-			guard renderer === self?.renderer else { return }
-			
+		bounds: CGRect,
+		on canvas: PreparedCanvas
+	) async throws -> UIImage {
+		let image = try await renderScheduler.enqueue(minDelay: minRenderDelay) {
 			let rawImage = canvas.render(bounds: bounds)
-			let image = UIImage(cgImage: rawImage)
-			
-			DispatchQueue.main.async { [weak self] in
-				guard renderer === self?.renderer else { return }
-				completion(image)
-			}
+			return UIImage(cgImage: rawImage)
 		}
+		
+		try Task.checkCancellation()
+		return image
 	}
+}
+
+extension CGRect {
+	static let unit = Self(origin: .zero, size: .one)
 }
 
 extension SimplePDFViewController: UIScrollViewDelegate {
