@@ -1,5 +1,6 @@
 import UIKit
 
+@MainActor
 public protocol SimplePDFViewControllerDelegate: AnyObject {
 	func pdfZoomed(to scale: CGFloat)
 	func pdfFinishedLoading()
